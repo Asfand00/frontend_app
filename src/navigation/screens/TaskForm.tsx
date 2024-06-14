@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { useQueryClient } from "@tanstack/react-query"; // Import useQueryClient
+
+const API_BASE_URL = 'http://localhost:3000'; // Replace with your computer's IPv4 address for example http://198.25.0.2:3000  
 
 export default function TaskForm({ navigation, route }: any) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const queryClient = useQueryClient(); // Grab the query client with useQueryClient()
 
   useEffect(() => {
     if (route.params?.task) {
@@ -15,19 +19,34 @@ export default function TaskForm({ navigation, route }: any) {
   }, [route.params?.task]);
 
   const handleSubmit = async () => {
-    if (route.params?.task) {
-      await axios.put(`http://localhost:3000/tasks/${route.params.task.id}`, { title, description });
-    } else {
-      await axios.post('http://localhost:3000/tasks', { title, description });
+    try {
+      if (route.params?.task) {
+        console.log(`Updating task with ID ${route.params.task.id}: ${title}, ${description}`);
+        await axios.put(`${API_BASE_URL}/tasks/${Number(route.params.task.id)}`, { title, description });
+      } else {
+        console.log(`Creating new task: ${title}, ${description}`);
+        await axios.post(`${API_BASE_URL}/tasks`, { title, description });
+      }
+      await queryClient.refetchQueries({ queryKey: ['tasks'] }); // Refetch the tasks query before exiting handleSubmit
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      // Handle error here (e.g., show error message to user)
     }
-    navigation.goBack();
   };
 
   const handleDelete = async () => {
-    if (route.params?.task) {
-      await axios.delete(`http://localhost:3000/tasks/${route.params.task.id}`);
+    try {
+      if (route.params?.task) {
+        console.log(`Deleting task with ID ${route.params.task.id}`);
+        await axios.delete(`${API_BASE_URL}/tasks/${Number(route.params.task.id)}`);
+      }
+      await queryClient.refetchQueries({ queryKey: ['tasks'] });
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error in handleDelete:', error);
+      // Handle error here (e.g., show error message to user)
     }
-    navigation.goBack();
   };
 
   return (

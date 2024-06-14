@@ -3,11 +3,14 @@ import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:3000'; // Replace with your computer's IP address 
+
 const fetchTasks = async () => {
   try {
-    const { data } = await axios.get('http://localhost:3000/tasks'); // Replace with your computer's IP address
+    const { data } = await axios.get(`${API_BASE_URL}/tasks`); // http://localhost:3000/tasks
     return data;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Error fetching tasks:', error);
     throw error; // Propagate the error for further handling
   }
