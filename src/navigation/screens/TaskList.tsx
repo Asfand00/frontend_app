@@ -3,7 +3,7 @@ import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000'; // Replace with your computer's IP address 
+const API_BASE_URL = 'http://localhost:3000'; // Replace with your computer's IPv4 address for example http://198.25.0.2:3000
 
 const fetchTasks = async () => {
   try {
